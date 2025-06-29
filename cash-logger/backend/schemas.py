@@ -1,0 +1,34 @@
+from pydantic import BaseModel
+from datetime import datetime
+from typing import Optional
+
+# 💰 Транзакция
+class TransactionCreate(BaseModel):
+    type: str  # 'sale', 'return', 'cancel', 'open_drawer'
+    amount: Optional[float] = None
+    cashier_id: int
+    shift_id: int
+
+class Transaction(TransactionCreate):
+    id: int
+    timestamp: datetime
+
+    class Config:
+        orm_mode = True
+
+# 🕒 Смена
+class ShiftStart(BaseModel):
+    cashier_id: int
+
+class ShiftEnd(BaseModel):
+    final_cash: float
+
+class Shift(BaseModel):
+    id: int
+    cashier_id: int
+    start_time: datetime
+    end_time: Optional[datetime]
+    final_cash: Optional[float]
+
+    class Config:
+        orm_mode = True
