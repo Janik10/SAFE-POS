@@ -1,6 +1,8 @@
 from fastapi import FastAPI, Depends
 from sqlalchemy.orm import Session
 from backend import database, models, schemas, crud
+from typing import List
+
 
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -49,3 +51,7 @@ def end_shift(shift_id: int, data: schemas.ShiftEnd, db: Session = Depends(get_d
 @app.get("/shifts/{shift_id}/report")
 def shift_report(shift_id: int, db: Session = Depends(get_db)):
     return crud.get_shift_report(db, shift_id)
+
+@app.get("/shifts", response_model=List[schemas.Shift])
+def get_all_shifts(db: Session = Depends(get_db)):
+    return db.query(models.Shift).all()
