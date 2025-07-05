@@ -7,7 +7,27 @@ import {
 import { useNavigate } from "react-router-dom";
 
 export default function Dashboard() {
-  const [cashierId, setCashierId] = useState<number>(1); // пока фиксировано
+  const [cashierId] = useState<number>(() => {
+  const stored = localStorage.getItem("cashierId");
+
+  if (!stored) {
+    alert("Кассир не найден. Переход к логину.");
+    window.location.href = "/";
+    return 0;
+  }
+
+  const id = parseInt(stored);
+  if (isNaN(id)) {
+    alert("Неверный cashierId");
+    window.location.href = "/";
+    return 0;
+  }
+
+  return id;
+});
+
+
+
   const [shiftId, setShiftId] = useState<number | null>(null);
   const [amount, setAmount] = useState<number>(0);
   const [type, setType] = useState<string>("income");
@@ -15,14 +35,18 @@ export default function Dashboard() {
   const navigate = useNavigate();
 
   const handleStartShift = async () => {
+    console.log("➡️ Запуск смены для кассира:", cashierId); // 👈 добавь это
     try {
       const data = await startShift(cashierId);
+      console.log("✅ Смена начата, ID смены:", data.id); // 👈 и это
       setShiftId(data.id);
       alert("Смена начата!");
     } catch (error) {
+      console.error("❌ Ошибка при запуске смены", error); // 👈 и это
       alert("Ошибка при запуске смены");
     }
-  };
+ };
+
 
   const handleEndShift = async () => {
     if (!shiftId) return alert("Нет активной смены");
@@ -83,14 +107,13 @@ export default function Dashboard() {
       </div>
 
       <div className="space-y-2">
-        <label className="block text-sm font-medium text-gray-700">Финальная сумма в кассе</label>
         <input
-            type="number"
-            placeholder="Итоговая касса"
-            value={finalCash}
-            onChange={(e) => setFinalCash(Number(e.target.value))}
-            className="border p-2 w-full"
-            />
+          type="number"
+          placeholder="Итоговая сумма в кассе"
+          value={finalCash}
+          onChange={(e) => setFinalCash(Number(e.target.value))}
+          className="border p-2 w-full"
+        />
       </div>
 
       <button

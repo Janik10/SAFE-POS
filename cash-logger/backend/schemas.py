@@ -14,7 +14,8 @@ class Transaction(TransactionCreate):
     timestamp: datetime
 
     class Config:
-        orm_mode = True
+        from_attributes = True
+
 
 # 🕒 Смена
 class ShiftStart(BaseModel):
@@ -27,8 +28,22 @@ class Shift(BaseModel):
     id: int
     cashier_id: int
     start_time: datetime
-    end_time: Optional[datetime]
-    final_cash: Optional[float]
+    end_time: Optional[datetime] = None
+    final_cash: Optional[float] = None
 
     class Config:
-        orm_mode = True
+        from_attributes = True
+
+
+# 👤 Кассир
+class CashierCreate(BaseModel):
+    name: str
+    role: Optional[str] = "cashier"
+
+class Cashier(BaseModel):
+    id: int
+    name: str
+    role: str
+
+    class Config:
+        from_attributes = True

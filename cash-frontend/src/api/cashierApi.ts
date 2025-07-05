@@ -54,3 +54,4 @@ export async function getShifts() {
   if (!response.ok) throw new Error("Ошибка при получении смен");
   return await response.json();
 }
+

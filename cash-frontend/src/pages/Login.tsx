@@ -1,14 +1,28 @@
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import axios from "axios";
 
 const Login = () => {
   const [cashierId, setCashierId] = useState("");
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  const handleLogin = () => {
-    if (cashierId) {
+  const handleLogin = async () => {
+    if (!cashierId.trim()) return;
+
+    try {
+      const res = await axios.get(`http://localhost:8000/cashiers/${cashierId}/exists`);
+      const { role } = res.data;
+
       localStorage.setItem("cashierId", cashierId);
-      navigate("/dashboard");
+
+      if (role === "manager") {
+        navigate("/manager");
+      } else {
+        navigate("/dashboard");
+      }
+    } catch (err) {
+      setError("Кассир не найден");
     }
   };
 
@@ -21,8 +35,9 @@ const Login = () => {
           placeholder="ID кассира"
           value={cashierId}
           onChange={(e) => setCashierId(e.target.value)}
-          className="w-full border px-4 py-2 rounded-lg mb-4"
+          className="w-full border px-4 py-2 rounded-lg mb-2"
         />
+        {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
         <button
           onClick={handleLogin}
           className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700"
