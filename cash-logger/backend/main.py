@@ -5,13 +5,15 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi import HTTPException
 
 from backend import database, models, schemas, crud
-from backend.routers import cashier  # <-- сначала импорт
+from backend.routers import cashier
+from backend.routers import manager  # <-- сначала импорт
 
 models.Base.metadata.create_all(bind=database.engine)
 
 app = FastAPI()  # <-- потом создаем app
 
 app.include_router(cashier.router)
+app.include_router(manager.router)
 
 
 

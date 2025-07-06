@@ -47,3 +47,16 @@ class Cashier(BaseModel):
 
     class Config:
         from_attributes = True
+
+# Manager-specific schemas
+class ManagerCreate(BaseModel):
+    name: str
+    role: Optional[str] = "manager"
+
+class Manager(BaseModel):
+    id: int
+    name: str
+    role: str
+
+    class Config:
+        from_attributes = True

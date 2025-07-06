@@ -8,23 +8,80 @@ const Login = () => {
   const navigate = useNavigate();
 
   const handleLogin = async () => {
-    if (!cashierId.trim()) return;
+  if (!cashierId) return;
 
-    try {
-      const res = await axios.get(`http://localhost:8000/cashiers/${cashierId}/exists`);
-      const { role } = res.data;
-
-      localStorage.setItem("cashierId", cashierId);
-
-      if (role === "manager") {
-        navigate("/manager");
-      } else {
-        navigate("/dashboard");
-      }
-    } catch (err) {
-      setError("Кассир не найден");
+  try {
+    const res = await fetch(`http://localhost:8000/cashiers/${cashierId}`);
+    if (!res.ok) {
+      alert("Кассир не найден");
+      return;
     }
-  };
+
+    const data = await res.json();
+
+    localStorage.setItem("cashierId", data.id.toString());
+    localStorage.setItem("role", data.role);
+
+    if (data.role === "manager") {
+      navigate("/manager");
+    } else {
+      navigate("/dashboard");
+    }
+  } catch (err) {
+    alert("Ошибка при логине");
+  }
+};
+
+const handleCashierLogin = async () => {
+  if (!cashierId) return;
+
+  try {
+    const res = await fetch(`http://localhost:8000/cashiers/${cashierId}`);
+    if (!res.ok) {
+      alert("Кассир не найден");
+      return;
+    }
+
+    const data = await res.json();
+
+    if (data.role !== "cashier") {
+      alert("Этот ID не принадлежит кассиру");
+      return;
+    }
+
+    localStorage.setItem("cashierId", data.id.toString());
+    localStorage.setItem("role", data.role);
+    navigate("/dashboard");
+  } catch (err) {
+    alert("Ошибка при логине");
+  }
+};
+
+const handleManagerLogin = async () => {
+  if (!cashierId) return;
+
+  try {
+    const res = await fetch(`http://localhost:8000/cashiers/${cashierId}`);
+    if (!res.ok) {
+      alert("Кассир не найден");
+      return;
+    }
+
+    const data = await res.json();
+
+    if (data.role !== "manager") {
+      alert("Этот ID не принадлежит менеджеру");
+      return;
+    }
+
+    localStorage.setItem("cashierId", data.id.toString());
+    localStorage.setItem("role", data.role);
+    navigate("/manager");
+  } catch (err) {
+    alert("Ошибка при логине");
+  }
+};
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
@@ -35,14 +92,19 @@ const Login = () => {
           placeholder="ID кассира"
           value={cashierId}
           onChange={(e) => setCashierId(e.target.value)}
-          className="w-full border px-4 py-2 rounded-lg mb-2"
+          className="w-full border px-4 py-2 rounded-lg mb-4"
         />
-        {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
         <button
-          onClick={handleLogin}
+          onClick={handleCashierLogin}
           className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700"
         >
-          Войти
+          Войти как кассир
+        </button>
+        <button
+          onClick={handleManagerLogin}
+          className="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 mt-2"
+        >
+          Войти как менеджер
         </button>
       </div>
     </div>

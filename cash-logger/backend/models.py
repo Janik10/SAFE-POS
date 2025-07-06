@@ -12,7 +12,7 @@ class Cashier(Base):
     role = Column(String, default="cashier")
     shifts = relationship("Shift", back_populates="cashier")
     transactions = relationship("Transaction", back_populates="cashier")
-
+    
 class Shift(Base):
     __tablename__ = "shifts"
     id = Column(Integer, primary_key=True, index=True)

@@ -1,0 +1,18 @@
+from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session
+from backend.database import get_db
+from backend import models, schemas
+
+router = APIRouter(prefix="/manager", tags=["managers"])
+
+@router.post("/", response_model=schemas.Cashier)
+def create_manager(manager: schemas.ManagerCreate, db: Session = Depends(get_db)):
+    new_manager = models.Cashier(name=manager.name, role="manager")
+    db.add(new_manager)
+    db.commit()
+    db.refresh(new_manager)
+    return new_manager
+
+@router.get("/", response_model=list[schemas.Cashier])
+def get_all_managers(db: Session = Depends(get_db)):
+    return db.query(models.Cashier).filter(models.Cashier.role == "manager").all()

@@ -26,6 +26,13 @@ export default function Report() {
   const [selectedDate, setSelectedDate] = useState<string>("");
 
   useEffect(() => {
+    const role = localStorage.getItem("role");
+    const cashierId = localStorage.getItem("cashierId");
+    if (!role || !cashierId) {
+      alert("Сначала войдите в систему");
+      window.location.href = "/";
+      return;
+    }
     async function fetchData() {
       try {
         const shiftData = await getShifts();

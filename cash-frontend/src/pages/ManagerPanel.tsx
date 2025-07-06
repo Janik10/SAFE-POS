@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
+
 
 interface Cashier {
   id: number;
@@ -22,10 +24,11 @@ interface Summary {
 }
 
 export default function ManagerPanel() {
+  const navigate = useNavigate();
+
   const [cashiers, setCashiers] = useState<Cashier[]>([]);
   const [shifts, setShifts] = useState<Shift[]>([]);
   const [summary, setSummary] = useState<Summary | null>(null);
-
   const [name, setName] = useState("");
   const [filterCashierId, setFilterCashierId] = useState<number | "">("");
   const [filterDate, setFilterDate] = useState("");
@@ -35,6 +38,9 @@ export default function ManagerPanel() {
   useEffect(() => {
     fetchCashiers();
   }, []);
+
+  // ... остальной код без изменений
+
 
   const fetchCashiers = async () => {
     const res = await axios.get(`${API}/cashiers`);
@@ -108,6 +114,22 @@ export default function ManagerPanel() {
         </button>
       </div>
 
+      <div className="mb-4">
+        <label className="mr-2">Фильтр по роли:</label>
+        <select
+          className="border p-2"
+          onChange={(e) => {
+            const role = e.target.value;
+            if (!role) fetchCashiers();
+            else setCashiers((prev) => prev.filter((c) => c.role === role));
+          }}
+        >
+          <option value="">Все</option>
+          <option value="cashier">cashier</option>
+          <option value="manager">manager</option>
+        </select>
+      </div>
+
       {/* Cashier Table */}
       <div className="mb-6">
         <h2 className="font-semibold text-lg mb-2">👤 Cashiers</h2>
@@ -122,15 +144,28 @@ export default function ManagerPanel() {
           </thead>
           <tbody>
             {cashiers.map((c) => (
-              <tr key={c.id}>
+              <tr
+                key={c.id}
+                className={c.role === "manager" ? "bg-green-100" : "bg-white"}
+              >
                 <td className="border p-2">{c.id}</td>
                 <td className="border p-2">{c.name}</td>
                 <td className="border p-2">{c.role}</td>
                 <td className="border p-2 space-x-2">
                   {c.role === "cashier" && (
-                    <button onClick={() => handlePromoteCashier(c.id)} className="bg-yellow-400 px-2 py-1 rounded">Promote</button>
+                    <button
+                      onClick={() => handlePromoteCashier(c.id)}
+                      className="bg-yellow-400 px-2 py-1 rounded text-white"
+                    >
+                      Promote
+                    </button>
                   )}
-                  <button onClick={() => handleDeleteCashier(c.id)} className="bg-red-500 px-2 py-1 text-white rounded">Delete</button>
+                  <button
+                    onClick={() => handleDeleteCashier(c.id)}
+                    className="bg-red-500 px-2 py-1 rounded text-white"
+                  >
+                    Delete
+                  </button>
                 </td>
               </tr>
             ))}
@@ -204,3 +239,18 @@ export default function ManagerPanel() {
     </div>
   );
 }
+
+<div className="mb-4 flex gap-2">
+  <button
+    onClick={() => navigate("/report")}
+    className="bg-blue-500 text-white px-4 py-2 rounded"
+  >
+    📄 Перейти в отчёты
+  </button>
+  <button
+    onClick={() => navigate("/transactions")}
+    className="bg-purple-600 text-white px-4 py-2 rounded"
+  >
+    💰 История транзакций
+  </button>
+</div>

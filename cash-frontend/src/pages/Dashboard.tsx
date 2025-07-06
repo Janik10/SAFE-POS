@@ -26,6 +26,14 @@ export default function Dashboard() {
   return id;
 });
 
+const role = localStorage.getItem("role");
+if (role !== "cashier") {
+  alert("Доступ разрешён только кассирам");
+  window.location.href = "/";
+  return null;
+}
+
+
 
 
   const [shiftId, setShiftId] = useState<number | null>(null);
