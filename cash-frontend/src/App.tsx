@@ -3,7 +3,8 @@ import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import Report from "./pages/Report";
 import ManagerPanel from "./pages/ManagerPanel";
-import Transactions from "./pages/Transactions"; // 🔥 NEW
+import Transactions from "./pages/Transactions";
+import ShiftTransactions from "./pages/ShiftTransactions";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
@@ -29,11 +30,11 @@ function App() {
         />
         <Route
           path="/shift/:id/transactions"
-          element={<ProtectedRoute allowedRoles={["manager"]} element={<Transactions />} />}
+          element={<ProtectedRoute allowedRoles={["manager"]} element={<ShiftTransactions />} />}
         />
-
       </Routes>
     </Router>
   );
 }
+
 export default App;
