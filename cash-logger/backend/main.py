@@ -99,3 +99,22 @@ def check_cashier_exists(cashier_id: int, db: Session = Depends(get_db)):
     if not cashier:
         raise HTTPException(status_code=404, detail="Кассир не найден")
     return {"status": "ok", "name": cashier.name, "role": cashier.role}
+
+@app.get("/transactions/by-shift/{shift_id}", response_model=List[schemas.Transaction])
+def get_transactions_by_shift(shift_id: int, db: Session = Depends(get_db)):
+    return db.query(models.Transaction).filter(models.Transaction.shift_id == shift_id).all()
+
+@app.post("/shifts/{shift_id}/end")
+def end_shift(shift_id: int, shift_end: schemas.ShiftEnd, db: Session = Depends(get_db)):
+    shift = db.query(models.Shift).filter_by(id=shift_id).first()
+    if not shift:
+        raise HTTPException(status_code=404, detail="Shift not found")
+
+    txns = db.query(models.Transaction).filter_by(shift_id=shift_id).all()
+    income = sum(t.amount for t in txns if t.type == "income")
+    expense = sum(t.amount for t in txns if t.type == "expense")
+    shift.end_time = datetime.utcnow()
+    shift.final_cash = shift_end.final_cash or (income - expense)
+
+    db.commit()
+    return shift

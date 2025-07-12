@@ -124,12 +124,7 @@ if (role !== "cashier") {
         />
       </div>
 
-      <button
-        className="underline text-blue-600"
-        onClick={() => navigate("/report")}
-      >
-        Перейти к отчету
-      </button>
+      
     </div>
   );
 }

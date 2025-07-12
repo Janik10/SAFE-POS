@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-
 interface Cashier {
   id: number;
   name: string;
@@ -198,6 +197,13 @@ export default function ManagerPanel() {
         </button>
         <button onClick={exportCSV} className="bg-gray-700 text-white px-4 py-2 rounded">
           ⬇ Export CSV
+        </button>
+
+        <button
+          onClick={() => navigate("/report")}
+          className="bg-indigo-600 text-white px-4 py-2 rounded"
+        >
+          📊 Перейти к отчёту
         </button>
       </div>
 

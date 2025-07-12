@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import { getTransactions } from "../api/cashierApi";
 
 interface Transaction {
@@ -10,18 +11,31 @@ interface Transaction {
   timestamp: string;
 }
 
-const Transactions = () => {
+export default function Transactions() {
+  const { id } = useParams(); // id смены (если есть)
   const [transactions, setTransactions] = useState<Transaction[]>([]);
 
   useEffect(() => {
-    getTransactions()
-      .then(setTransactions)
-      .catch(() => alert("Ошибка при загрузке транзакций"));
-  }, []);
+    if (id) {
+      // если передан shift_id — грузим только по смене
+      fetch(`http://localhost:8000/transactions/by-shift/${id}`)
+        .then((res) => res.json())
+        .then(setTransactions)
+        .catch(() => alert("Ошибка при загрузке транзакций по смене"));
+    } else {
+      // иначе — загружаем все
+      getTransactions()
+        .then(setTransactions)
+        .catch(() => alert("Ошибка при загрузке транзакций"));
+    }
+  }, [id]);
 
   return (
     <div className="p-4">
-      <h2 className="text-xl font-bold mb-4">🧾 История транзакций</h2>
+      <h2 className="text-xl font-bold mb-4">
+        {id ? `🧾 Транзакции по смене #${id}` : "🧾 История всех транзакций"}
+      </h2>
+
       <table className="w-full border">
         <thead>
           <tr>
@@ -48,6 +62,4 @@ const Transactions = () => {
       </table>
     </div>
   );
-};
-
-export default Transactions;
+}

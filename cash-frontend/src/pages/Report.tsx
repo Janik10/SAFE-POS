@@ -128,7 +128,16 @@ export default function Report() {
         </thead>
         <tbody>
           {filteredShifts.map((shift) => (
-            <tr key={shift.id}>
+            <tr
+              key={shift.id}
+              onClick={() => window.location.href = `/shift/${shift.id}/transactions`}
+              className={`cursor-pointer ${
+                shift.final_cash !== null &&
+                Math.abs(shift.final_cash - calculatePredictedCash(shift.id)) > 1
+                  ? "bg-red-100"
+                  : ""
+              }`}
+            >
               <td className="border px-4 py-2">{shift.id}</td>
               <td className="border px-4 py-2">{shift.cashier_id}</td>
               <td className="border px-4 py-2">{formatDate(shift.start_time)}</td>
@@ -149,6 +158,19 @@ export default function Report() {
         <p>Доход: {summary.income.toFixed(2)} ₼</p>
         <p>Расход: {summary.expense.toFixed(2)} ₼</p>
         <p>Прибыль: {(summary.income - summary.expense).toFixed(2)} ₼</p>
+
+        {filteredShifts.map((shift) => {
+            const predicted = calculatePredictedCash(shift.id);
+            const final = shift.final_cash;
+            if (final != null && Math.abs(final - predicted) > 5) {
+              return (
+                <p key={shift.id} className="text-red-600 mt-2 font-semibold">
+                  ⚠️ Смена #{shift.id} подозрительна: расхождение более 5 AZN (реальная: {final}, ожидаемая: {predicted})
+                </p>
+              );
+            }
+            return null;
+          })}
       </div>
     </div>
   );

@@ -27,6 +27,11 @@ function App() {
           path="/transactions"
           element={<ProtectedRoute allowedRoles={["manager"]} element={<Transactions />} />}
         />
+        <Route
+          path="/shift/:id/transactions"
+          element={<ProtectedRoute allowedRoles={["manager"]} element={<Transactions />} />}
+        />
+
       </Routes>
     </Router>
   );
