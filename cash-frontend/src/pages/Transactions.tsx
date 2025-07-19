@@ -16,17 +16,31 @@ export default function Transactions() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
 
   useEffect(() => {
+    console.log("Transactions page loaded, id:", id);
     if (id) {
       // если передан shift_id — грузим только по смене
-      fetch(`http://localhost:8000/transactions/by-shift/${id}`)
+      fetch(`http://127.0.0.1:8000/transactions/by-shift/${id}`)
         .then((res) => res.json())
-        .then(setTransactions)
-        .catch(() => alert("Ошибка при загрузке транзакций по смене"));
+        .then((data) => {
+          console.log("Transactions by shift:", data);
+          setTransactions(data);
+        })
+        .catch((err) => {
+          console.error("Error loading shift transactions:", err);
+          alert("Ошибка при загрузке транзакций по смене");
+        });
     } else {
       // иначе — загружаем все
+      console.log("Loading all transactions...");
       getTransactions()
-        .then(setTransactions)
-        .catch(() => alert("Ошибка при загрузке транзакций"));
+        .then((data) => {
+          console.log("All transactions:", data);
+          setTransactions(data);
+        })
+        .catch((err) => {
+          console.error("Error loading all transactions:", err);
+          alert("Ошибка при загрузке транзакций");
+        });
     }
   }, [id]);
 

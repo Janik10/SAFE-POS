@@ -25,7 +25,7 @@ function App() {
           element={<ProtectedRoute allowedRoles={["manager"]} element={<ManagerPanel />} />}
         />
         <Route
-          path="/transactions"
+          path="/transaction"
           element={<ProtectedRoute allowedRoles={["manager"]} element={<Transactions />} />}
         />
         <Route
